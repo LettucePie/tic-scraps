@@ -8,16 +8,18 @@
 
 
 -- Input Center
-player_x = 24
+player_x = 26
 player_y = 80
 player_h = 20
 jump = false
-jump_force = -2.5
+jump_force = -3.5
 velocity = 0.0
 gravity = 0.2
 floor = true
 under = false
 -- Anim Sets
+center_x = 9
+center_y = 18
 frame_rate = 8
 anim_frame = 1
 run_anim = {262,264,266,268}
@@ -31,6 +33,38 @@ map_sx = 0
 
 function BOOT()
 	trace("Boot")
+end
+
+function Collision()
+	p_map_x = player_x//8 + map_x
+	p_map_y = player_y//8
+	p_map_h = (player_y - player_h)//8
+	y_tile = mget(p_map_x, p_map_y)
+	h_tile = mget(p_map_x, p_map_h)
+	floor = fget(y_tile, 1)
+	under = fget(h_tile, 1)
+	if floor then
+		diff = player_y - (p_map_y * 8)
+		if velocity < 0.0 
+		and diff > 4 then
+			player_y = player_y - diff
+		end
+		velocity = 0.0
+	else
+		velocity = velocity + gravity
+	end
+end
+
+function Input()
+	if btn(0) then player_y=player_y-1 end
+	if btn(1) then player_y=player_y+1 end
+	if btn(2) then player_x=player_x-1 end
+	if btn(3) then player_x=player_x+1 end
+	jump = btn(4)
+	if floor and jump and under==false then
+		velocity = jump_force
+	end
+	player_y = player_y + velocity
 end
 
 function MapScroll(active, direction)
@@ -57,43 +91,36 @@ function Animator()
 			anim_frame = 1 
 		end
 	end
-	spr(run_anim[anim_frame],15,62,0,1,0,0,2,2)
+	spr(run_anim[anim_frame],
+		15, player_y - center_y,
+		0,1,
+		0,0,
+		2,2)
 end
 
-function Collision()
-	p_map_x = player_x//8 + map_x
-	p_map_y = player_y//8
-	p_map_h = (player_y - player_h)//8
-	y_tile = mget(p_map_x, p_map_y)
-	h_tile = mget(p_map_x, p_map_h)
-	floor = fget(y_tile, 1)
-	under = fget(h_tile, 1)
+function Debug()
+	-- Player dot for debug
+	-- also other debug shtuff
+	pix(player_x, player_y, 13)
+	pix(player_x, player_y - player_h, 13)
+	print("Jump = " .. tostring(jump), 64, 82)
+	print("mx: " .. tostring(map_x), 64, 90)
+	print("msx: " .. tostring(map_sx), 64, 98)
+	print("p2mx: "..tostring(p_map_x).." p2my: "..tostring(p_map_y), 64, 106)
+	print("py: "..tostring(player_y).." pydiff: "..tostring(player_y - (p_map_y * 8)), 64, 114)
+	print("floor: "..tostring(floor), 64, 122)
+	print("under: "..tostring(under), 64, 130)
 end
 
 function TIC()
 
-	if btn(0) then player_y=player_y-1 end
-	if btn(1) then player_y=player_y+1 end
-	if btn(2) then player_x=player_x-1 end
-	if btn(3) then player_x=player_x+1 end
-	if velocity == 0.0 and btn(4) then
-		velocity = jump_force
-	end
+	Collision()
+	Input()
 	
 	cls(8)
 	MapScroll(true, -1.0)
 	Animator()
-	Collision()
-	-- Player dot for debug
-	pix(player_x, player_y, 13)
-	pix(player_x, player_y - player_h, 13)
-	print("Jump = " .. tostring(jump), 84, 82)
-	print("mx: " .. tostring(map_x), 84, 90)
-	print("msx: " .. tostring(map_sx), 84, 98)
-	print("p2mx: "..tostring(p_map_x).." p2my: "..tostring(p_map_y), 84, 106)
-	print("tile: "..tostring(tile), 84, 114)
-	print("floor: "..tostring(floor), 84, 122)
-	print("under: "..tostring(under), 84, 130)
+	Debug()
 end
 
 
