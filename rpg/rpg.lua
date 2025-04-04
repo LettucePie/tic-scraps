@@ -22,12 +22,6 @@ function Anim.new(t)
 	return i
 end
 
-function Anim:displayName()
-	trace("DISPLAYNAME")
-	trace(self)
-	return self.n
-end
-
 t=0
 walk_forward = {}
 walk_forward_idx = 1
@@ -44,9 +38,6 @@ function BOOT()
 	trace("BOOT")
 	set2bpp()
 	walk_forward = Anim.new{"walk_f",0,2,2,0,2,{512,514,512,516}}
- trace(walk_forward)
- trace(walk_forward.n)
- trace(walk_forward.displayName())
 end
 
 function TIC()
@@ -54,9 +45,10 @@ function TIC()
 	map(0,0,30,16,0,0)
 	if t > 12 then
 	walk_forward_idx = walk_forward_idx + 1
+	t = 0
 		if walk_forward_idx > 4 then walk_forward_idx = 1 end
 	end
---	spr(walk_forward.ids[walk_forward_idx],20,20,-1,1,0,0,walk_forward.w,walk_forward.y)
+	spr(walk_forward.i[walk_forward_idx],20,20,-1,1,0,0,walk_forward.w,walk_forward.h)
 	t = t + 1
 end
 -- <TILES>
