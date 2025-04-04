@@ -1,0 +1,12 @@
+ 
+function Anim.new(t)
+	local i = setmetatable({}, metaAnim)
+	i.n=t[1] "Name"
+	i.f=t[2] "Flip"
+	i.w=t[3] "Width"
+	i.h=t[4] "Height"
+	i.b=t[5] "Bank"
+	i.p=t[6] "BPP" 1, 2, or 4
+	i.i=t[7] "Sprite/Map IDS"
+	return i
+end

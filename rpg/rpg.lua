@@ -6,15 +6,26 @@
 -- version: 0.1
 -- script:  lua
 
-Anim={name="name",bank=0,w=2,h=2,flip=0,ids={}}
+Anim = {}
+metaAnim = {}
+metaAnim.__index = Anim
 
-function Anim:create(o)
- trace(o)
- trace(o.bank)
- trace(o.parent)
- trace(o.self)
-	o.parent = self
-	return o
+function Anim.new(t)
+	local i = setmetatable({}, metaAnim)
+	i.n=t[1]
+	i.f=t[2]
+	i.w=t[3]
+	i.h=t[4]
+	i.b=t[5]
+	i.p=t[6]
+	i.i=t[7]
+	return i
+end
+
+function Anim:displayName()
+	trace("DISPLAYNAME")
+	trace(self)
+	return self.n
 end
 
 t=0
@@ -30,10 +41,12 @@ function set2bpp()
 end
 
 function BOOT()
+	trace("BOOT")
 	set2bpp()
-	walk_forward = Anim:create{"walk_f",0,2,2,0,{512,514,512,516}}
+	walk_forward = Anim.new{"walk_f",0,2,2,0,2,{512,514,512,516}}
  trace(walk_forward)
- trace(walk_forward.name)
+ trace(walk_forward.n)
+ trace(walk_forward.displayName())
 end
 
 function TIC()
