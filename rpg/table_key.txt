@@ -10,3 +10,28 @@ function Anim.new(t)
 	i.i=t[7] "Sprite/Map IDS"
 	return i
 end
+
+function Char.new(t)
+	local i = setmetatable({}, metaChar)
+	i.n = t[1] -- Name
+	i.fs = t[2] -- Animation FrameSheet
+	i.wx = t[3] -- world_X
+	i.wy = t[4] -- world Y
+	i.a = i.fs.walk_d -- Current Anim
+	i.fi = 1 -- Current Frame Index
+	i.ft = 0 -- Current Frame Tick
+	i.p = true -- Paused
+	i.act = false -- Acting / performing action
+	return i
+end
+
+function Movement.new(t)
+	local i = setmetatable({}, metaMovement)
+	i.c = t[1] -- Character
+	i.s = t[2] -- speed increment
+	i.d = t[3] -- direction
+	i.fx = t[4] -- final worldx
+	i.fy = t[5] -- final worldy
+	i.act_type = "movement"
+	return i
+end

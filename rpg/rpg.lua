@@ -6,7 +6,9 @@
 -- version: 0.1
 -- script:  lua
 
-
+--
+-- Classes
+--
 Char = {}
 metaChar = {}
 metaChar.__index = Char
@@ -21,6 +23,22 @@ function Char.new(t)
 	i.fi = 1 -- Current Frame Index
 	i.ft = 0 -- Current Frame Tick
 	i.p = true -- Paused
+	i.act = false -- Acting / performing action
+	return i
+end
+
+Movement = {}
+metaMovement = {}
+metaMovement.__index = Movement
+
+function Movement.new(t)
+	local i = setmetatable({}, metaMovement)
+	i.c = t[1] -- Character
+	i.s = t[2] -- speed increment
+	i.d = t[3] -- direction
+	i.fx = t[4] -- final worldx
+	i.fy = t[5] -- final worldy
+	i.act_type = "movement"
 	return i
 end
 --
@@ -50,6 +68,7 @@ player={}
 characters={}
 origin_x=0
 origin_y=0
+actions={}
 --
 -- Game Data
 --
@@ -87,6 +106,13 @@ function tableLength(t)
 	return count
 end
 
+function round(num, dec)
+	local mult = 10^(dec or 0)
+	return math.floor(num * mult + 0.5) / mult
+end
+--
+-- Game
+--
 function make_character(name, x, y)
 	trace("MAKING CHAR: " .. name .. " AT X:" .. x .. " Y:" .. y)
 	if anim_glossary[name] ~= nil then
@@ -101,6 +127,23 @@ end
 function stop_character(char)
 	char.p = true
 	char.fi = 1
+end
+
+function make_movement(char, dir)
+	if char.act == false then
+		trace("MAKING CHAR_MOVEMENT: ".. char.n .. " DIR: " .. dir)
+		fx = char.wx
+		fy = char.wy
+		if dir == "up" then fy=fy-2 end
+		if dir == "down" then fy=fy+2 end
+		if dir == "left" then fx=fx-2 end
+		if dir == "right" then fx=fx+2 end
+		--fx = fx + 0.0
+		--fy = fy + 0.0
+		trace("movementgoal: " .. tostring(fx).. "," .. tostring(fy))
+		char.act = true
+		return Movement.new({char, 0.2, dir, fx, fy})
+	else return false end
 end
 
 function BOOT()
@@ -141,34 +184,65 @@ function proc_Input()
 	if btn(3) then inputs.right.time = inputs.right.time + 1 else inputs.right.held = false end
 end
 
-function proc_WorldMove(input_dir, anim)
+function query_WorldMovement(input_dir, anim, dir)
 	if input_dir.held then
 		if input_dir.time < 2 then
 			player.a = anim
-			player.fi = 1
 			player.ft = 0
-			player.p = true
+			stop_character(player)
 		else player.p = false end
+		if input_dir.time > 5 then
+			local new_movement = make_movement(player, dir)
+			if new_movement ~= false then table.insert(actions, new_movement) end
+		end
 	elseif input_dir.time >= 2 then
-		player.p = true
-		player.fi = 1
+		stop_character(player)
 		input_dir.time = 0
 	end
 end
 
-function proc_Act()
+function build_Acts()
 	if game_state == "world" then
-		proc_WorldMove(inputs.up, player.fs.walk_u)
-		proc_WorldMove(inputs.down, player.fs.walk_d)
-		proc_WorldMove(inputs.left, player.fs.walk_l)
-		proc_WorldMove(inputs.right, player.fs.walk_r)
+		query_WorldMovement(inputs.up, player.fs.walk_u, "up")
+		query_WorldMovement(inputs.down, player.fs.walk_d, "down")
+		query_WorldMovement(inputs.left, player.fs.walk_l, "left")
+		query_WorldMovement(inputs.right, player.fs.walk_r, "right")
+	end
+end
+
+function proc_Acts()
+	for k,v in pairs(actions) do
+		finished = false
+		if v.act_type == "movement" then
+			trace("ACTION IS MOVEMENT")
+			if round(v.c.wx,1) == round(v.fx,1) and round(v.c.wy,1) == round(v.fy,1) then
+				trace("**MOVEMENT IS FINISHED")
+				finished = true
+				v.c.act = false
+			end
+			if finished == false then
+				trace("MOVEMENT MATH")
+				if v.d == "up" then v.c.wy=v.c.wy-v.s end
+				if v.d == "down" then v.c.wy=v.c.wy+v.s end
+				if v.d == "left" then v.c.wx=v.c.wx-v.s end
+				if v.d == "right" then v.c.wx=v.c.wx+v.s end
+				--v.c.wx = round(v.c.wx, 1)
+				--v.c.wy = round(v.c.wy, 1)
+			end
+			trace("X: " .. tostring(v.c.wx) .. " Y: " .. tostring(v.c.wy))
+		end
+		if finished then
+			v = nil
+			table.remove(actions, k)
+		end
 	end
 end
 
 function proc_Map()
-	origin_x = player.wx - 14
-	origin_y = player.wy - 8
-	map(origin_x, origin_y)
+	origin_x = round(player.wx, 0) - 14
+	origin_y = round(player.wy, 0) - 8
+
+	map(origin_x, origin_y, 31, 18)
 end
 
 function proc_Anims()
@@ -202,15 +276,11 @@ end
 function TIC()
 	cls()
 	proc_Input()
-	proc_Act()
+	build_Acts()
+	proc_Acts()
 	proc_Map()
 	proc_Anims()
 	proc_Spr()
-	print("up| held: " .. tostring(inputs.up.held) .. " time: " .. tostring(inputs.up.time), 4, 4, 10)
-	print("down| held: " .. tostring(inputs.down.held) .. " time: " .. tostring(inputs.down.time), 4, 14, 10)
-	print("left| held: " .. tostring(inputs.left.held) .. " time: " .. tostring(inputs.left.time), 4, 24, 10)
-	print("right| held: " .. tostring(inputs.right.held) .. " time: " .. tostring(inputs.right.time), 4, 34, 10)
-	print("player paused: " .. tostring(player.p), 4, 44, 10)
 	if t > 12 then t = 0 end
 	t = t + 1
 end
