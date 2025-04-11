@@ -20,7 +20,7 @@ function Char.new(t)
 	i.a = i.fs.walk_d -- Current Anim
 	i.fi = 1 -- Current Frame Index
 	i.ft = 0 -- Current Frame Tick
-	i.p = false -- Paused
+	i.p = true -- Paused
 	return i
 end
 --
@@ -79,6 +79,11 @@ function make_character(name, x, y)
 	end
 end
 
+function stop_character(char)
+	char.p = true
+	char.fi = 1
+end
+
 function BOOT()
 	trace("BOOT")
 	set2bpp()
@@ -94,8 +99,17 @@ function BOOT()
 
 end
 
+function proc_Input()
+	if btn(0) then player.wy=player.wy-1 end
+	if btn(1) then player.wy=player.wy+1 end
+	if btn(2) then player.wx=player.wx-1 end
+	if btn(3) then player.wx=player.wx+1 end
+end
+
 function proc_Map()
-	map(player.wx - 14, player.wy - 8)
+	origin_x = player.wx - 14
+	origin_y = player.wy - 8
+	map(origin_x, origin_y)
 end
 
 function proc_Anims()
@@ -128,6 +142,7 @@ end
 
 function TIC()
 	cls()
+	proc_Input()
 	proc_Map()
 	proc_Anims()
 	proc_Spr()
