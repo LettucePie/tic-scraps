@@ -27,6 +27,25 @@ end
 -- Global Variables
 --
 t=0
+inputs={
+	up = {
+		held = false,
+		time = 0
+	},
+	down = {
+		held = false,
+		time = 0
+	},
+	left = {
+		held = false,
+		time = 0
+	},
+	right = {
+		held = false,
+		time = 0
+	}
+}
+game_state = "world"
 player={}
 characters={}
 origin_x=0
@@ -100,10 +119,50 @@ function BOOT()
 end
 
 function proc_Input()
-	if btn(0) then player.wy=player.wy-1 end
-	if btn(1) then player.wy=player.wy+1 end
-	if btn(2) then player.wx=player.wx-1 end
-	if btn(3) then player.wx=player.wx+1 end
+	if btnp(0) then
+		inputs.up.held = true
+		inputs.up.time = 0
+	end
+	if btn(0) then inputs.up.time = inputs.up.time + 1 else inputs.up.held = false end
+	if btnp(1) then
+		inputs.down.held = true
+		inputs.down.time = 0
+	end
+	if btn(1) then inputs.down.time = inputs.down.time + 1 else inputs.down.held = false end
+	if btnp(2) then
+		inputs.left.held = true
+		inputs.left.time = 0
+	end
+	if btn(2) then inputs.left.time = inputs.left.time + 1 else inputs.left.held = false end
+	if btnp(3) then
+		inputs.right.held = true
+		inputs.right.time = 0
+	end
+	if btn(3) then inputs.right.time = inputs.right.time + 1 else inputs.right.held = false end
+end
+
+function proc_WorldMove(input_dir, anim)
+	if input_dir.held then
+		if input_dir.time < 2 then
+			player.a = anim
+			player.fi = 1
+			player.ft = 0
+			player.p = true
+		else player.p = false end
+	elseif input_dir.time >= 2 then
+		player.p = true
+		player.fi = 1
+		input_dir.time = 0
+	end
+end
+
+function proc_Act()
+	if game_state == "world" then
+		proc_WorldMove(inputs.up, player.fs.walk_u)
+		proc_WorldMove(inputs.down, player.fs.walk_d)
+		proc_WorldMove(inputs.left, player.fs.walk_l)
+		proc_WorldMove(inputs.right, player.fs.walk_r)
+	end
 end
 
 function proc_Map()
@@ -143,9 +202,15 @@ end
 function TIC()
 	cls()
 	proc_Input()
+	proc_Act()
 	proc_Map()
 	proc_Anims()
 	proc_Spr()
+	print("up| held: " .. tostring(inputs.up.held) .. " time: " .. tostring(inputs.up.time), 4, 4, 10)
+	print("down| held: " .. tostring(inputs.down.held) .. " time: " .. tostring(inputs.down.time), 4, 14, 10)
+	print("left| held: " .. tostring(inputs.left.held) .. " time: " .. tostring(inputs.left.time), 4, 24, 10)
+	print("right| held: " .. tostring(inputs.right.held) .. " time: " .. tostring(inputs.right.time), 4, 34, 10)
+	print("player paused: " .. tostring(player.p), 4, 44, 10)
 	if t > 12 then t = 0 end
 	t = t + 1
 end
