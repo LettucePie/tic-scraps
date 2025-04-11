@@ -191,7 +191,7 @@ function query_WorldMovement(input_dir, anim, dir)
 			player.ft = 0
 			stop_character(player)
 		else player.p = false end
-		if input_dir.time > 5 then
+		if input_dir.time > 6 then
 			local new_movement = make_movement(player, dir)
 			if new_movement ~= false then table.insert(actions, new_movement) end
 		end
@@ -214,22 +214,18 @@ function proc_Acts()
 	for k,v in pairs(actions) do
 		finished = false
 		if v.act_type == "movement" then
-			trace("ACTION IS MOVEMENT")
 			if round(v.c.wx,1) == round(v.fx,1) and round(v.c.wy,1) == round(v.fy,1) then
-				trace("**MOVEMENT IS FINISHED")
 				finished = true
 				v.c.act = false
 			end
 			if finished == false then
-				trace("MOVEMENT MATH")
 				if v.d == "up" then v.c.wy=v.c.wy-v.s end
 				if v.d == "down" then v.c.wy=v.c.wy+v.s end
 				if v.d == "left" then v.c.wx=v.c.wx-v.s end
 				if v.d == "right" then v.c.wx=v.c.wx+v.s end
-				--v.c.wx = round(v.c.wx, 1)
-				--v.c.wy = round(v.c.wy, 1)
+				v.c.wx = round(v.c.wx, 1)
+				v.c.wy = round(v.c.wy, 1)
 			end
-			trace("X: " .. tostring(v.c.wx) .. " Y: " .. tostring(v.c.wy))
 		end
 		if finished then
 			v = nil
