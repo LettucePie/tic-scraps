@@ -20,7 +20,7 @@ function Char.new(t)
 	i.a = i.fs.walk_d -- Current Anim
 	i.fi = 1 -- Current Frame Index
 	i.ft = 0 -- Current Frame Tick
-	i.p = true -- Paused
+	i.p = false -- Paused
 	return i
 end
 --
@@ -91,8 +91,6 @@ function BOOT()
 	trace(characters[1].n)
 	trace("MAKE test")
 	make_character("test", 10, 10)
-	trace(player.n)
-	trace(tableLength(player.fs.walk_l))
 
 end
 
@@ -110,7 +108,7 @@ function proc_Anims()
 		player.ft = player.ft + 1
 	end
 	for k,v in pairs(characters) do
-		if v.paused == false then
+		if v.p == false then
 			if v.ft > 12 then
 				v.ft = 0
 				v.fi = v.fi + 1
