@@ -6,33 +6,6 @@
 -- version: 0.1
 -- script:  lua
 
-Anim = {}
-metaAnim = {}
-metaAnim.__index = Anim
-
-function Anim.new(t)
-	local i = setmetatable({}, metaAnim)
-	i.n=t[1]
-	i.f=t[2]
-	i.w=t[3]
-	i.h=t[4]
-	i.b=t[5]
-	i.p=t[6]
-	i.i=t[7]
-	return i
-end
-
-AnimAtlas = {}
-metaAnimAtlas = {}
-metaAnimAtlas.__index = AnimAtlas
-
-function AnimAtlas.new(t)
-	local i = setmetatable({}, metaAnimAtlas)
-	i.walk_d=t[1] -- "Walk Down"
-	i.walk_u=t[2] -- "Walk Up"
-	i.walk_l=t[3] -- "Walk Left"
-	i.walk_r=t[4] -- "Walk Right"
-end
 
 Char = {}
 metaChar = {}
@@ -40,46 +13,44 @@ metaChar.__index = Char
 
 function Char.new(t)
 	local i = setmetatable({}, metaChar)
-	i.n = t[1] -- "Name"
-	i.fs = t[2] -- "Animation FrameSheet"
-	i.x = t[3]
-	i.y = t[4]
-	i.a = i.fs[1] -- "Current Anim"
+	i.n = t[1] -- Name
+	i.fs = t[2] -- Animation FrameSheet
+	i.wx = t[3] -- world_X
+	i.wy = t[4] -- world Y
+	i.a = i.fs.walk_d -- Current Anim
+	i.fi = 1 -- Current Frame Index
+	i.ft = 0 -- Current Frame Tick
+	i.p = true -- Paused
 	return i
 end
-
 --
 -- Global Variables
 --
-
 t=0
 player={}
 characters={}
-
+origin_x=0
+origin_y=0
 --
 -- Game Data
 --
-
 anim_glossary = {
 	player = {
 		walk_d = {512,514,512,516},
 		walk_u = {518,520,518,522},
 		walk_l = {580,582},
 		walk_r = {576,578}
-		}
+	},
+	sarah = {
+		walk_d = {2,4,6,8}
+	}
 }
-
 --
 -- Helpers
 --
+function set4bpp() poke4(2 * 0x3ffc, 2) end
 
-function set4bpp()
-	poke4(2 * 0x3ffc, 2)
-end
-
-function set2bpp()
-	poke4(2 * 0x3ffc, 4)
-end
+function set2bpp() poke4(2 * 0x3ffc, 4) end
 
 function tableContains(t, v)
 	found = false
@@ -112,20 +83,56 @@ function BOOT()
 	trace("BOOT")
 	set2bpp()
 	trace("MAKEPLAYER")
-	player = make_character("player", 5, 5)
+	player = make_character("player", 14, 8)
+	table.insert(characters, make_character("sarah", 16, 8))
+	trace("HOW MANY CHARACTERS?")
+	trace(tableLength(characters))
+	trace("WHO IS CHARACTER NUM:1 ?")
+	trace(characters[1].n)
+	trace("MAKE test")
 	make_character("test", 10, 10)
-	trace(player)
 	trace(player.n)
-	trace(player.fs)
-	trace(tableLength(player.fs))
-	trace(tableLength(player.fs.walk_d))
 	trace(tableLength(player.fs.walk_l))
 
 end
 
+function proc_Map()
+	map(player.wx - 14, player.wy - 8)
+end
+
+function proc_Anims()
+	if player.p == false then
+		if player.ft > 12 then
+			player.ft = 0
+			player.fi = player.fi + 1
+			if player.fi > tableLength(player.a) then player.fi = 1 end
+		end
+		player.ft = player.ft + 1
+	end
+	for k,v in pairs(characters) do
+		if v.paused == false then
+			if v.ft > 12 then
+				v.ft = 0
+				v.fi = v.fi + 1
+				if v.fi > tableLength(v.a) then v.fi = 1 end
+			end
+			v.ft = v.ft + 1
+		end
+	end
+end
+
+function proc_Spr()
+	spr(player.a[player.fi],112,64,0,1,0,0,2,2)
+	for k,v in pairs(characters) do
+		spr(v.a[v.fi],(v.wx-origin_x)*8,(v.wy-origin_y)*8,0,1,0,0,2,2)
+	end
+end
+
 function TIC()
 	cls()
-	map(0,0,30,16,0,0)
+	proc_Map()
+	proc_Anims()
+	proc_Spr()
 	if t > 12 then t = 0 end
 	t = t + 1
 end
