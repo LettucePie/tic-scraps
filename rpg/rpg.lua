@@ -22,11 +22,56 @@ function Anim.new(t)
 	return i
 end
 
+AnimAtlas = {}
+metaAnimAtlas = {}
+metaAnimAtlas.__index = AnimAtlas
+
+function AnimAtlas.new(t)
+	local i = setmetatable({}, metaAnimAtlas)
+	i.walk_d=t[1] -- "Walk Down"
+	i.walk_u=t[2] -- "Walk Up"
+	i.walk_l=t[3] -- "Walk Left"
+	i.walk_r=t[4] -- "Walk Right"
+end
+
+Char = {}
+metaChar = {}
+metaChar.__index = Char
+
+function Char.new(t)
+	local i = setmetatable({}, metaChar)
+	i.n = t[1] -- "Name"
+	i.fs = t[2] -- "Animation FrameSheet"
+	i.x = t[3]
+	i.y = t[4]
+	i.a = i.fs[1] -- "Current Anim"
+	return i
+end
+
+--
+-- Global Variables
+--
+
 t=0
-walk_forward = {}
-walk_backward = {}
-walk_forward_idx = 1
-walk_left_idx = 1
+player={}
+characters={}
+
+--
+-- Game Data
+--
+
+anim_glossary = {
+	player = {
+		walk_d = {512,514,512,516},
+		walk_u = {518,520,518,522},
+		walk_l = {580,582},
+		walk_r = {576,578}
+		}
+}
+
+--
+-- Helpers
+--
 
 function set4bpp()
 	poke4(2 * 0x3ffc, 2)
@@ -36,30 +81,52 @@ function set2bpp()
 	poke4(2 * 0x3ffc, 4)
 end
 
+function tableContains(t, v)
+	found = false
+	for _, x in pairs(t) do
+		if x == v then
+			found = true
+		end
+	end
+	return found
+end
+
+function tableLength(t)
+	local count = 0
+	for _ in pairs(t) do count = count + 1 end
+	return count
+end
+
+function make_character(name, x, y)
+	trace("MAKING CHAR: " .. name .. " AT X:" .. x .. " Y:" .. y)
+	if anim_glossary[name] ~= nil then
+		trace("FOUND")
+		return Char.new({name,anim_glossary[name],x,y})
+	else
+		trace("NOT FOUND")
+		return false
+	end
+end
+
 function BOOT()
 	trace("BOOT")
 	set2bpp()
-	walk_forward = Anim.new{"walk_f",0,2,2,0,2,{512,514,512,516}}
-	walk_backward = Anim.new{"walk_b",0,2,2,0,2,{518,520,518,522}}
-	walk_left = Anim.new{"walk_l",0,2,2,0,2,{580,582}}
-	walk_right = Anim.new{"walk_r",0,2,2,0,2,{576,578}}
+	trace("MAKEPLAYER")
+	player = make_character("player", 5, 5)
+	make_character("test", 10, 10)
+	trace(player)
+	trace(player.n)
+	trace(player.fs)
+	trace(tableLength(player.fs))
+	trace(tableLength(player.fs.walk_d))
+	trace(tableLength(player.fs.walk_l))
+
 end
 
 function TIC()
 	cls()
 	map(0,0,30,16,0,0)
-	if t > 12 then
-	walk_forward_idx = walk_forward_idx + 1
-	walk_left_idx = walk_left_idx + 1
-	t = 0
-		if walk_forward_idx > 4 then walk_forward_idx = 1 end
-		if walk_left_idx > 2 then walk_left_idx = 1 end
-	end
-	spr(walk_forward.i[walk_forward_idx],20,20,-1,1,0,0,walk_forward.w,walk_forward.h)
-	spr(walk_backward.i[walk_forward_idx],36,20,-1,1,0,0,walk_backward.w,walk_backward.h)
-	spr(walk_left.i[walk_left_idx],20,36,-1,1,0,0,walk_left.w,walk_right.h)
-	spr(walk_right.i[walk_left_idx],36,36,-1,1,0,0,walk_left.w,walk_right.h)
-	
+	if t > 12 then t = 0 end
 	t = t + 1
 end
 
