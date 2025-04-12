@@ -253,7 +253,7 @@ end
 function proc_Map()
 	origin_x = round(player.wx - 14, 1)
 	origin_y = round(player.wy - 8, 1)
-	map(map_draw_x - 2, map_draw_y - 2, 32, 19, map_offset_x, map_offset_y)
+	map(map_draw_x - 2, map_draw_y - 2, 34, 21, map_offset_x, map_offset_y)
 	print(tostring(origin_x) .. "  " .. tostring(origin_y), 4, 4, 9)
 	print(tostring(map_draw_x) .. "  " .. tostring(map_draw_y), 4, 14, 8)
 	print(tostring(map_offset_x) .. "  " .. tostring(map_offset_y), 4, 24, 7)
