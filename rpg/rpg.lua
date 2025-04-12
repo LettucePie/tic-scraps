@@ -72,6 +72,7 @@ map_draw_x=0
 map_draw_y=0
 map_offset_x=-16
 map_offset_y=-16
+map_pan_smooth=false
 actions={}
 --
 -- Game Data
@@ -237,7 +238,7 @@ function proc_Acts()
 				if v.d == "right" then v.c.wx=v.c.wx+v.s end
 				v.c.wx = round(v.c.wx, 1)
 				v.c.wy = round(v.c.wy, 1)
-				if v.c.n == "player" then
+				if v.c.n == "player" and map_pan_smooth then
 					map_offset_x = map_offset_x + ((pre_x - v.c.wx) * 8)
 					map_offset_y = map_offset_y + ((pre_y - v.c.wy) * 8)
 				end
@@ -253,6 +254,10 @@ end
 function proc_Map()
 	origin_x = round(player.wx - 14, 1)
 	origin_y = round(player.wy - 8, 1)
+	if not map_pan_smooth then
+		map_draw_x = origin_x
+		map_draw_y = origin_y
+	end
 	map(map_draw_x - 2, map_draw_y - 2, 34, 21, map_offset_x, map_offset_y)
 	print(tostring(origin_x) .. "  " .. tostring(origin_y), 4, 4, 9)
 	print(tostring(map_draw_x) .. "  " .. tostring(map_draw_y), 4, 14, 8)
