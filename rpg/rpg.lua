@@ -115,6 +115,25 @@ function round(num, dec)
 	local mult = 10^(dec or 0)
 	return math.floor(num * mult + 0.5) / mult
 end
+
+function roundHalf(num)
+	local pos = num > 0
+	local r = num
+	local base = math.floor(num)
+	if pos then 
+		r = r - base 
+	else 
+	 base = math.ceil(num)
+		r = math.abs(r - base)
+	end
+	if r < 0.5 then
+		if r <= 0.25 then r = 0 else r = 0.5 end
+	else
+		if r <= 0.75 then r = 0.5 else r = 1.0 end
+	end
+	if not pos then r = r * -1.0 end
+	return r + base
+end
 --
 -- Game
 --
@@ -153,6 +172,20 @@ end
 
 function BOOT()
 	trace("BOOT")
+	trace("expect 1.0")
+	trace(roundHalf(1.2))
+	trace("expect 1.5")
+	trace(roundHalf(1.6))
+	trace("expect 0")
+	trace(roundHalf(-0.2))
+	trace("expect -1.5")
+	trace(roundHalf(-1.7))
+	trace("expect -1.5")
+	trace(roundHalf(-1.5))
+	trace("expect 5.5")
+	trace(roundHalf(5.5))
+	trace("expect -3.0")
+	trace(roundHalf(-2.8))
 	set2bpp()
 	trace("MAKEPLAYER")
 	player = make_character("player", 14, 8)
