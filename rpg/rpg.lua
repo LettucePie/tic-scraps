@@ -72,7 +72,7 @@ map_draw_x=0
 map_draw_y=0
 map_offset_x=-16
 map_offset_y=-16
-map_pan_smooth=true
+map_pan_smooth=false
 actions={}
 --
 -- Game Data
@@ -288,6 +288,8 @@ function proc_Map()
 	origin_x = round(player.wx - 14, 1)
 	origin_y = round(player.wy - 8, 1)
 	if not map_pan_smooth then
+		origin_x = roundHalf(origin_x)
+		origin_y = roundHalf(origin_y)
 		map_draw_x = origin_x
 		map_draw_y = origin_y
 	end
