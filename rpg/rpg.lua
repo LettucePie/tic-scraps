@@ -73,7 +73,7 @@ map_draw_x=0
 map_draw_y=0
 map_offset_x=-16
 map_offset_y=-16
-map_pan_smooth=false
+map_pan_smooth=true
 actions={}
 --
 -- Bank Data Storage
@@ -83,6 +83,14 @@ bankdata_step=6
 mapdat={{},{},{},{},{},{}}
 tildat={{},{},{},{},{},{}}
 sprdat={{},{},{},{},{},{}}
+--
+-- Palette Data
+--
+palettes={
+	[0]=0xeeeee2aeaaaa6d6d6d282828,
+	[33]=0x507900c2da794cbe0000ce6d,
+	[66]=0x507900c2da794cbe0000ce6d
+}
 --
 -- Game Data
 --
@@ -113,6 +121,16 @@ end
 function sset(x,y,c)
 	local addr=0x4000+(x//8+y//8*16)*32
 	poke4(addr*2+x%8+y%8*8,c)
+end
+
+function getData(t,x,y)
+	local result = nil
+	for i,v in ipairs(t) do
+		if v[1] == x then
+			if v[2] == y then result =  v[3] end
+		end
+	end
+	return result
 end
 
 function collectTile(idx)
@@ -230,6 +248,9 @@ function BOOT()
 	player = make_character("player", 14, 8)
 	table.insert(characters, make_character("sarah", 16, 8))
 	trace(mget(25,5))
+	local a = tostring(6)..","..tostring(5)
+	local b = "6,5"
+	trace(a == b)
 
 end
 
@@ -318,6 +339,18 @@ function proc_Acts()
 	end
 end
 
+function override_Map(tile,x,y)
+	if current_bank == 1 then
+		-- Gamebreaking
+		--local ctile = getData(mapdat[3],x,y)
+		--local ptile = getData(mapdat[5],x,y)
+		--poke(0x3FC0, palettes[ptile])
+		return tile
+	else
+		return tile
+	end
+end
+
 function proc_Map()
 	origin_x = round(player.wx - 14, 1)
 	origin_y = round(player.wy - 8, 1)
@@ -327,7 +360,7 @@ function proc_Map()
 		map_draw_x = origin_x
 		map_draw_y = origin_y
 	end
-	map(map_draw_x - 2, map_draw_y - 2, 34, 21, map_offset_x, map_offset_y)
+	map(map_draw_x-2,map_draw_y-2,34,21,map_offset_x,map_offset_y,-1,1,override_Map)
 end
 
 function proc_Anims()
@@ -367,6 +400,7 @@ function TIC()
 	proc_Map()
 	proc_Anims()
 	proc_Spr()
+	if not bankdata_loaded then cls() end
 	if t > 12 then t = 0 end
 	t = t + 1
 end
@@ -570,5 +604,6 @@ end
 
 -- <PALETTE2>
 -- 000:4c4c4cff000000ff000000ff000000000000000000000000000000000000000000000000000000000000000000000000
+-- 001:507900c2da794cbe0000ce6d000000000000000000000000000000000000000000000000000000000000000000000000
 -- </PALETTE2>
 
