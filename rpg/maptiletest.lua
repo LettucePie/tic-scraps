@@ -12,9 +12,11 @@ loaded = false
 load_step = 3
 sprdat = {{},{},{}}
 mapdat = {{},{},{}}
+bpp2mode = true
 
 function BOOT()
 	trace("BOOT")
+	if bpp2mode then poke4(2 * 0x3ffc, 4) end
 end
 
 function compileData()
@@ -43,8 +45,8 @@ function sset(x,y,c)
 end
 
 function collectSpr(idx)
-	for x=8, 15 do
-		for y=0, 7 do
+	for x=0, 31 do
+		for y=0, 15 do
 			table.insert(sprdat[idx],{x,y,sget(x,y)})
 		end
 	end 
@@ -106,11 +108,12 @@ function TIC()
 		collect()
 	end
 	
-	print("mpage "..mpage,4,4,1)
-	print("tpage "..tpage,4,14,1)
+	print("mpage "..mpage-1,4,4,1)
+	print("tpage "..tpage-1,4,14,1)
 end
 
 -- <TILES>
+-- 000:00005aa500005695000056950000569500005695000056950000569500005aa5
 -- 001:44bbbb4444b44b4444b44b4444b44b4444b44b4444b44b4444b44b4444bbbb44
 -- 002:ccccceee8888cceeaaaa0cee888a0ceeccca0ccc0cca0c0c0cca0c0c0cca0c0c
 -- 003:eccccccccc888888caaaaaaaca888888cacccccccacccccccacc0ccccacc0ccc
@@ -122,10 +125,12 @@ end
 -- </TILES>
 
 -- <TILES1>
+-- 000:0000aaba0000aeba0000aaba0000aaba0000aaba0000aaba0000aaba0000affb
 -- 001:4442244444442444444424444444244444442444444424444444244444222224
 -- </TILES1>
 
 -- <TILES2>
+-- 000:0000f7df0000f55f0000fd7f0000ff7f0000ff5f0000f7df0000fdff0000f55f
 -- 001:2244442222422422224224222222242222222422222244222244222222444442
 -- </TILES2>
 
