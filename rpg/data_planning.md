@@ -11,6 +11,8 @@ You can change the Pinned setting on the Bank Switcher, allowing you to change t
 
 As far as sprite data in ram is concerned, 4bpp, 2bpp, and 1bpp are just a sort of "rendering" method. the data is the same and in the same location. How it's interpreted in the editor is completely over my head, but as long as I retrieve enough of the spritesheet and set the blit mode to 2bpp it will render 2bpp sprites.
 
+gathering 512\*8 by 512\*8 sprite data is a lot for tic80 to handle. Going to need to limit the amount of Collision/Interaction/Palette Data Index tiles, perhaps to one single bank.
+
 ## Brainstorm
 
  * By Default everything is in the grayscale. Colorization is unlocked as a gameplay feature.
@@ -32,11 +34,11 @@ As far as sprite data in ram is concerned, 4bpp, 2bpp, and 1bpp are just a sort 
 
 #### Map
 
- * Outdoor Overworld
+ * Outdoor Overworld (Sync + Render)
 
 #### Tiles Page 1
 
- * Outdoor Overworld Tiles
+ * Outdoor Overworld Tiles (Don't Store)
 
 #### Tiles Page 2
 
@@ -66,11 +68,11 @@ As far as sprite data in ram is concerned, 4bpp, 2bpp, and 1bpp are just a sort 
 
 #### Map
 
- * Indoor Overworld
+ * Indoor Overworld (Sync + Render)
 
 #### Tiles Page 1
 
- * Indoor Overworld Tiles
+ * Indoor Overworld Tiles (Don't Store)
 
 #### Tiles Page 2
 
@@ -99,16 +101,16 @@ As far as sprite data in ram is concerned, 4bpp, 2bpp, and 1bpp are just a sort 
 
 #### Map
 
- * Outdoor Collision/Interaction Data Tiles
+ * Outdoor Collision/Interaction Data Tiles (Storage Only)
 
 #### Tiles Page 1
 
- * Collision Code Tiles (Storage Only)
- * Key Interaction Code Tiles (Storage Only)
+ * Collision Code Tiles (Don't Store)
+ * Key Interaction Code Tiles (Don't Store)
 
 #### Tiles Page 2
 
- * Palette Code Tiles (Storage Only)
+ * Palette Code Tiles (Don't Store)
 
 #### Sprites Page 1
 
@@ -133,23 +135,23 @@ As far as sprite data in ram is concerned, 4bpp, 2bpp, and 1bpp are just a sort 
 
 #### Map
 
- * Indoor Collision/Interaction Data Tiles
+ * Indoor Collision/Interaction Data Tiles (Storage Only)
 
 #### Tiles Page 1
 
- * No Designation
+ * *Battle Sprites?*
 
 #### Tiles Page 2
 
- * No Designation
+ * *Battle Sprites?*
 
 #### Sprites Page 1
 
- * No Designation
+ * *Battle Sprites?*
 
 #### Sprites Page 2
 
- * No Designation
+ * *Battle Sprites?*
 
 #### Sounds
 
@@ -166,7 +168,7 @@ As far as sprite data in ram is concerned, 4bpp, 2bpp, and 1bpp are just a sort 
 
 #### Map
 
- * Outdoor Palette Data/Index Tiles
+ * Outdoor Palette Data/Index Tiles (Storage Only)
 
 #### Tiles Page 1
 
@@ -199,7 +201,7 @@ As far as sprite data in ram is concerned, 4bpp, 2bpp, and 1bpp are just a sort 
 
 #### Map
 
- * Indoor Palette Data/Index Tiles
+ * Indoor Palette Data/Index Tiles (Storage Only)
 
 #### Tiles Page 1
 

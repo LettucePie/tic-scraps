@@ -129,7 +129,7 @@ function collectMap(idx)
 end
 
 function collectData(idx)
-	collectSpr(idx)
+	--collectSpr(idx)
 	collectMap(idx)
 end
 
