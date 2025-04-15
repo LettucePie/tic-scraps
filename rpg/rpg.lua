@@ -87,9 +87,20 @@ sprdat={{},{},{},{},{},{}}
 -- Palette Data
 --
 palettes={
-	[0]=0xeeeee2aeaaaa6d6d6d282828,
-	[33]=0x507900c2da794cbe0000ce6d,
-	[66]=0x507900c2da794cbe0000ce6d
+	[0]=
+	{
+		0xee,0xee,0xe2,
+		0xae,0xaa,0xaa,
+		0x6d,0x6d,0x6d,
+		0x28,0x28,0x28
+	},
+	[33]=
+	{
+		0x50,0x79,0x00,
+		0xc2,0xda,0x79,
+		0x4c,0xbe,0x00,
+		0x00,0xce,0x6d
+	}
 }
 --
 -- Game Data
@@ -121,6 +132,12 @@ end
 function sset(x,y,c)
 	local addr=0x4000+(x//8+y//8*16)*32
 	poke4(addr*2+x%8+y%8*8,c)
+end
+
+function pset(p)
+	for i=0, 11 do
+		poke(0x3FC0+i,p[i+1],8)
+	end
 end
 
 function collectTile(idx)
@@ -342,7 +359,8 @@ function override_Map(tile,x,y)
 	if current_bank == 1 then
 		local ctile = mapdat[3][x][y]
 		local ptile = mapdat[5][x][y]
-		poke(0x3FC0, palettes[ptile])
+		--if ptile > 0 then trace(tostring(ptile)..":"..x.."-"..y) end
+		pset(palettes[ptile])
 		return tile
 	else
 		return tile
