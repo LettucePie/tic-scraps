@@ -238,14 +238,14 @@ end
 function clamp(n, l, h) return math.min(math.max(n,l),h) end
 
 function map_wrap_x(tx)
-	if tx > 239 then return tx - 239
-	elseif tx < 0 then return tx + 239
+	if tx >= 240 then return tx - 240
+	elseif tx < 0 then return tx + 240
 	else return tx end
 end
 
 function map_wrap_y(ty)
-	if ty > 135 then return ty - 135
-	elseif ty < 0 then return ty + 135
+	if ty >= 136 then return ty - 136
+	elseif ty < 0 then return ty + 136
 	else return ty end
 end
 --
@@ -305,6 +305,7 @@ function make_movement(char, dir)
 		if dir == "right" then fx=fx+2 end
 		fx = map_wrap_x(fx)
 		fy = map_wrap_y(fy)
+		trace("Making Movement To Target "..fx.. " : "..fy)
 		if validate_movement(char, fx, fy) then
 			trace("VALID MOVEMENT")
 			char.act = true
