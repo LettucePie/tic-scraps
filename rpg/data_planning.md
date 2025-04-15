@@ -9,6 +9,8 @@ Maps do not care what the bpp is, at least not in a memory sense. You can set th
 
 You can change the Pinned setting on the Bank Switcher, allowing you to change the bank the map is on to a fresh/unused bank, while retaining the sprites of a previous bank. In theory this allows us to expand the size of the overworld, though I currently do not know the process in code to load just the sprites of one bank, and the map of another.
 
+As far as sprite data in ram is concerned, 4bpp, 2bpp, and 1bpp are just a sort of "rendering" method. the data is the same and in the same location. How it's interpreted in the editor is completely over my head, but as long as I retrieve enough of the spritesheet and set the blit mode to 2bpp it will render 2bpp sprites.
+
 ## Brainstorm
 
  * By Default everything is in the grayscale. Colorization is unlocked as a gameplay feature.
