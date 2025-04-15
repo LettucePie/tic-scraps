@@ -139,7 +139,7 @@ gathering 512\*8 by 512\*8 sprite data is a lot for tic80 to handle. Going to ne
 
 #### Tiles Page 1
 
- * *Battle Sprites?*
+ * *Battle Sprites?* (Sync)
 
 #### Tiles Page 2
 
@@ -155,11 +155,11 @@ gathering 512\*8 by 512\*8 sprite data is a lot for tic80 to handle. Going to ne
 
 #### Sounds
 
- * No Designation
+ * *Battle Sounds?*
 
 #### Tracks
 
- * No Designation
+ * *Battle Music?*
 
 
 ### Bank 4

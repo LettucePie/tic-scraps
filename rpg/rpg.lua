@@ -64,6 +64,7 @@ inputs={
 	}
 }
 game_state = "world"
+current_bank = 1
 player={}
 characters={}
 origin_x=0
@@ -80,12 +81,14 @@ actions={}
 bankdata_loaded=false
 bankdata_step=6
 mapdat={{},{},{},{},{},{}}
+tildat={{},{},{},{},{},{}}
 sprdat={{},{},{},{},{},{}}
 --
 -- Game Data
 --
 anim_glossary = {
 	player = {
+		bank = 1,
 		walk_d = {512,514,512,516},
 		walk_u = {518,520,518,522},
 		walk_l = {580,582},
@@ -112,9 +115,17 @@ function sset(x,y,c)
 	poke4(addr*2+x%8+y%8*8,c)
 end
 
+function collectTile(idx)
+	for x=0, 255 do
+		for y=0, 255 do
+			table.insert(tildat[idx],{x,y,sget(x,y)})
+		end
+	end
+end
+
 function collectSpr(idx)
-	for x=0, 512*8 do
-		for y=0, 512*8 do
+	for x=256, 511 do
+		for y=256, 511 do
 			table.insert(sprdat[idx],{x,y,sget(x,y)})
 		end
 	end
@@ -129,7 +140,9 @@ function collectMap(idx)
 end
 
 function collectData(idx)
-	--collectSpr(idx)
+	--if idx <= 2 then collectSpr(idx) end
+	collectTile(idx)
+	collectSpr(idx)
 	collectMap(idx)
 end
 
