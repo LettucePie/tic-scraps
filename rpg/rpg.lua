@@ -123,38 +123,37 @@ function sset(x,y,c)
 	poke4(addr*2+x%8+y%8*8,c)
 end
 
-function getData(t,x,y)
-	local result = nil
-	for i,v in ipairs(t) do
-		if v[1] == x then
-			if v[2] == y then result =  v[3] end
-		end
-	end
-	return result
-end
-
 function collectTile(idx)
+	local grid={}
 	for x=0, 255 do
+		grid[x]={}
 		for y=0, 255 do
-			table.insert(tildat[idx],{x,y,sget(x,y)})
+			grid[x][y]=sget(x,y)
 		end
 	end
+	tildat[idx]=grid
 end
 
 function collectSpr(idx)
+	local grid={}
 	for x=256, 511 do
+		grid[x]={}
 		for y=256, 511 do
-			table.insert(sprdat[idx],{x,y,sget(x,y)})
+			grid[x][y]=sget(x,y)
 		end
 	end
+	sprdat[idx]=grid
 end
 
 function collectMap(idx)
+	local grid={}
 	for x=0, 239 do
+		grid[x]={}
 		for y=0, 135 do
-			table.insert(mapdat[idx],{x,y,mget(x,y)})
+			grid[x][y]=mget(x,y)
 		end
 	end
+	mapdat[idx]=grid
 end
 
 function collectData(idx)
@@ -341,10 +340,9 @@ end
 
 function override_Map(tile,x,y)
 	if current_bank == 1 then
-		-- Gamebreaking
-		--local ctile = getData(mapdat[3],x,y)
-		--local ptile = getData(mapdat[5],x,y)
-		--poke(0x3FC0, palettes[ptile])
+		local ctile = mapdat[3][x][y]
+		local ptile = mapdat[5][x][y]
+		poke(0x3FC0, palettes[ptile])
 		return tile
 	else
 		return tile
