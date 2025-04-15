@@ -46,12 +46,12 @@ gathering 512\*8 by 512\*8 sprite data is a lot for tic80 to handle. Going to ne
 
 #### Sprites Page 1
 
- * Main Character Overworld Animations
+ * Main Character Overworld Animations (Store)
  * *Other Characters???*
 
 #### Sprites Page 2
 
- * Probably more Character Overworld Sprites
+ * Probably more Character Overworld Sprites (Store)
 
 #### Sounds
 
@@ -80,11 +80,11 @@ gathering 512\*8 by 512\*8 sprite data is a lot for tic80 to handle. Going to ne
 
 #### Sprites Page 1
 
- * No Designation
+ * Probably more Character Overworld Sprites (Store)
 
 #### Sprites Page 2
 
- * No Designation
+ * Probably more Character Overworld Sprites (Store)
 
 #### Sounds
 
