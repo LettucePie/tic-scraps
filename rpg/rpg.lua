@@ -73,6 +73,7 @@ map_draw_x=0
 map_draw_y=0
 map_offset_x=-16
 map_offset_y=-16
+map_palettes={}
 map_pan_smooth=true
 actions={}
 --
@@ -367,6 +368,10 @@ function override_Map(tile,x,y)
 	end
 end
 
+function draw_Map()
+	map(map_draw_x-2,map_draw_y-2,34,21,map_offset_x,map_offset_y,-1,1,override_Map)
+end
+
 function proc_Map()
 	origin_x = round(player.wx - 14, 1)
 	origin_y = round(player.wy - 8, 1)
@@ -376,7 +381,7 @@ function proc_Map()
 		map_draw_x = origin_x
 		map_draw_y = origin_y
 	end
-	map(map_draw_x-2,map_draw_y-2,34,21,map_offset_x,map_offset_y,-1,1,override_Map)
+	draw_Map()	
 end
 
 function proc_Anims()

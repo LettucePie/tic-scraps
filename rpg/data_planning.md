@@ -15,6 +15,8 @@ As far as sprite data in ram is concerned, 4bpp, 2bpp, and 1bpp are just a sort 
 
 **512 * 8 by 512 * 8** was not only absurd it was just wrong. The total sprite field is 512 by 512...
 
+**OH DANG** I cannot do the color manipulations I had originally planned this whole thing around... Screen coordinates are literally coordinates to the Palette data. I cannot change just one set of map tile or sprite or even screen pixel colors without affecting the entire render. There is an overlay render, but it's limited to just the one layer.
+
 ## Brainstorm
 
  * By Default everything is in the grayscale. Colorization is unlocked as a gameplay feature.
