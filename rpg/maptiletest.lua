@@ -12,7 +12,7 @@ loaded = false
 load_step = 3
 sprdat = {{},{},{}}
 mapdat = {{},{},{}}
-bpp2mode = true
+bpp2mode = false
 
 function BOOT()
 	trace("BOOT")

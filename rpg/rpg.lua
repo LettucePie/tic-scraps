@@ -75,6 +75,13 @@ map_offset_y=-16
 map_pan_smooth=false
 actions={}
 --
+-- Bank Data Storage
+--
+bankdata_loaded=false
+bankdata_step=6
+mapdat={{},{},{},{},{},{}}
+sprdat={{},{},{},{},{},{}}
+--
 -- Game Data
 --
 anim_glossary = {
@@ -94,6 +101,47 @@ anim_glossary = {
 function set4bpp() poke4(2 * 0x3ffc, 2) end
 
 function set2bpp() poke4(2 * 0x3ffc, 4) end
+
+function sget(x,y)
+	local addr=0x4000+(x//8+y//8*16)*32
+	return peek4(addr*2+x%8+y%8*8)
+end
+
+function sset(x,y,c)
+	local addr=0x4000+(x//8+y//8*16)*32
+	poke4(addr*2+x%8+y%8*8,c)
+end
+
+function collectSpr(idx)
+	for x=0, 512*8 do
+		for y=0, 512*8 do
+			table.insert(sprdat[idx],{x,y,sget(x,y)})
+		end
+	end
+end
+
+function collectMap(idx)
+	for x=0, 239 do
+		for y=0, 135 do
+			table.insert(mapdat[idx],{x,y,mget(x,y)})
+		end
+	end
+end
+
+function collectData(idx)
+	collectSpr(idx)
+	collectMap(idx)
+end
+
+function collect()
+	if bankdata_step > 0 and not bankdata_loaded then
+		sync(0,bankdata_step-1,false)
+		trace("SYNCED TO BANK: "..bankdata_step-1)
+		collectData(bankdata_step)
+		bankdata_step = bankdata_step - 1
+		if bankdata_step <= 0 then bankdata_loaded = true end
+	end
+end
 
 function tableContains(t, v)
 	found = false
@@ -138,12 +186,9 @@ end
 -- Game
 --
 function make_character(name, x, y)
-	trace("MAKING CHAR: " .. name .. " AT X:" .. x .. " Y:" .. y)
 	if anim_glossary[name] ~= nil then
-		trace("FOUND")
 		return Char.new({name,anim_glossary[name],x,y})
 	else
-		trace("NOT FOUND")
 		return false
 	end
 end
@@ -155,16 +200,12 @@ end
 
 function make_movement(char, dir)
 	if char.act == false then
-		trace("MAKING CHAR_MOVEMENT: ".. char.n .. " DIR: " .. dir)
 		fx = char.wx
 		fy = char.wy
 		if dir == "up" then fy=fy-2 end
 		if dir == "down" then fy=fy+2 end
 		if dir == "left" then fx=fx-2 end
 		if dir == "right" then fx=fx+2 end
-		--fx = fx + 0.0
-		--fy = fy + 0.0
-		trace("movementgoal: " .. tostring(fx).. "," .. tostring(fy))
 		char.act = true
 		return Movement.new({char, 0.2, dir, fx, fy})
 	else return false end
@@ -172,30 +213,9 @@ end
 
 function BOOT()
 	trace("BOOT")
-	trace("expect 1.0")
-	trace(roundHalf(1.2))
-	trace("expect 1.5")
-	trace(roundHalf(1.6))
-	trace("expect 0")
-	trace(roundHalf(-0.2))
-	trace("expect -1.5")
-	trace(roundHalf(-1.7))
-	trace("expect -1.5")
-	trace(roundHalf(-1.5))
-	trace("expect 5.5")
-	trace(roundHalf(5.5))
-	trace("expect -3.0")
-	trace(roundHalf(-2.8))
 	set2bpp()
-	trace("MAKEPLAYER")
 	player = make_character("player", 14, 8)
 	table.insert(characters, make_character("sarah", 16, 8))
-	trace("HOW MANY CHARACTERS?")
-	trace(tableLength(characters))
-	trace("WHO IS CHARACTER NUM:1 ?")
-	trace(characters[1].n)
-	trace("MAKE test")
-	make_character("test", 10, 10)
 
 end
 
@@ -326,6 +346,7 @@ end
 
 function TIC()
 	cls()
+	if not bankdata_loaded then collect() end
 	proc_Input()
 	build_Acts()
 	proc_Acts()

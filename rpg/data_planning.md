@@ -99,17 +99,16 @@ As far as sprite data in ram is concerned, 4bpp, 2bpp, and 1bpp are just a sort 
 
 #### Map
 
- * Outdoor Collision Data
+ * Outdoor Collision/Interaction Data Tiles
 
 #### Tiles Page 1
 
- * Collision Code Tiles
- * Key Interaction Code Tiles
- * Pallete Code Tiles?
+ * Collision Code Tiles (Storage Only)
+ * Key Interaction Code Tiles (Storage Only)
 
 #### Tiles Page 2
 
- * No Designation
+ * Palette Code Tiles (Storage Only)
 
 #### Sprites Page 1
 
@@ -134,11 +133,11 @@ As far as sprite data in ram is concerned, 4bpp, 2bpp, and 1bpp are just a sort 
 
 #### Map
 
- * Indoor Collision Data
+ * Indoor Collision/Interaction Data Tiles
 
 #### Tiles Page 1
 
- * No Designation **ASSUMING** the data tiles from Bank 2 TilePage 1 can be applied.
+ * No Designation
 
 #### Tiles Page 2
 
@@ -161,6 +160,70 @@ As far as sprite data in ram is concerned, 4bpp, 2bpp, and 1bpp are just a sort 
  * No Designation
 
 
-### Banks 4 - 7
+### Bank 4
 
-Currently No Designation... but hey that is A LOT of data room. Perhaps storing save data or player actions / changes.
+**BPP: 2**
+
+#### Map
+
+ * Outdoor Palette Data/Index Tiles
+
+#### Tiles Page 1
+
+ * No Designation
+
+#### Tiles Page 2
+
+ * No Designation
+
+#### Sprites Page 1
+
+ * No Designation
+
+#### Sprites Page 2
+
+ * No Designation
+
+#### Sounds
+
+ * No Designation
+
+#### Tracks
+
+ * No Designation
+
+
+### Bank 5
+
+**BPP: 2**
+
+#### Map
+
+ * Indoor Palette Data/Index Tiles
+
+#### Tiles Page 1
+
+ * No Designation
+
+#### Tiles Page 2
+
+ * No Designation
+
+#### Sprites Page 1
+
+ * No Designation
+
+#### Sprites Page 2
+
+ * No Designation
+
+#### Sounds
+
+ * No Designation
+
+#### Tracks
+
+ * No Designation
+
+
+### Bank 6 and 7 currently unknown
