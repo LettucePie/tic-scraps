@@ -51,11 +51,11 @@ function pset(p)
 end
 
 function recolor_tile(sx,sy,p)
-	for x=sx, sx+8 do
-		for y=sy, sy+8 do
+	for x=sx, sx+7 do
+		for y=sy, sy+7 do
 			local pixC = pix(x,y)
 			if pixC < 4 then
-				pix(x,y,p[pixC])
+				pix(x,y,p[pixC+1])
 			end
 		end
 	end
@@ -66,7 +66,7 @@ function scry_map()
 		for y=0, 14 do
 			trace(x.."|"..y..": "..mget(x,y))
 			local tile = mget(x,y)
-			if tile < 6 then 
+			if tile < 6 and tile ~= 0 then 
 				recolor_tile(x*8,y*8,palette_recode[4])
 			end
 			if tile >= 6 and tile < 24 then
