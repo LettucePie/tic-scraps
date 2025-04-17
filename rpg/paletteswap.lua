@@ -23,9 +23,59 @@ palettes={
 	}
 }
 
+-- What about rewriting the assigned
+-- 0,1,2,3 Palette/Code Colors to 
+-- Colors outside of their range?
+
+-- Produce tiles in grayscale, and
+-- then instead of re-assigning to
+-- Actual RGB values, re-assign them
+-- to Palette values. Confined to 
+-- 12 (16 to start minus 4 grayscale)
+-- However that's still a lot of
+-- potential expression.
+
+palette_recode={
+	[0]={4,5,6,14},
+	[1]={3,2,1,0},
+	[2]={5,4,1,4},
+	[3]={0,5,10,5},
+	[4]={15,14,13,12}
+}
+recode=true
+
 function pset(p)
 	for i=0, 11 do
 		poke(0x3FC0+i,p[i+1],8)
+	end
+end
+
+function recolor_tile(sx,sy,p)
+	for x=sx, sx+8 do
+		for y=sy, sy+8 do
+			local pixC = pix(x,y)
+			if pixC < 4 then
+				pix(x,y,p[pixC])
+			end
+		end
+	end
+end
+
+function scry_map()
+	for x=0, 30 do
+		for y=0, 14 do
+			trace(x.."|"..y..": "..mget(x,y))
+			local tile = mget(x,y)
+			if tile < 6 then 
+				recolor_tile(x*8,y*8,palette_recode[4])
+			end
+			if tile >= 6 and tile < 24 then
+				recolor_tile(x*8,y*8,palette_recode[3])
+			end
+			if tile >=24 then
+				recolor_tile(x*8,y*8,palette_recode[2])
+			end
+		end
 	end
 end
 
@@ -42,31 +92,24 @@ end
 function TIC()
 	cls()
 	map()
-	for x=0, 29 do
-		for y=0, 16 do
-			local tileid = mget(x,y)
-			if tileid == 3
-			or tileid == 4
-			or tileid == 19
-			or tileid == 20 then
-				local xpos = x*8
-				local ypos = y*8
-			end
-		end
+	if btnp(0) then
+		if recode then recode = false
+		else recode = true end
 	end
+	if recode then scry_map() end
 end
 
 -- <TILES>
--- 000:0000aaaa0000a2aa0000a08a0000a8aa00002aaa0000aaaa0000aaa80000aaaa
--- 001:555dcccc545988885659aaaa55598888555dccccd55d0cccd6550ccc45550ccc
--- 002:ccccceee8888cceeaaaa0cee888a0ceeccca0ccc0cca0c0c0cca0c0c0cca0c0c
--- 003:eccccccccc888888caaaaaaaca888888cacccccccacccccccacc0ccccacc0ccc
--- 004:ccccceee8888cceeaaaa0cee888a0ceeccca0cccccca0c0c0cca0c0c0cca0c0c
--- 016:0000cfff0000c3fc0000cccf0000ffff0000ffff0000ffff0000cff30000cff0
--- 017:cfffccccfebbaaaafbfbcaaafeabacccffefaaaafffc8888cfff0cccecffccec
--- 018:ccca00ccaaaa0ccecaaa0ceeaaaa0ceeaaaa0cee8888ccee000cceeecccceeee
--- 019:cacccccccaaaaaaacaaacaaacaaaaccccaaaaaaac8888888cc000cccecccccec
--- 020:ccca00ccaaaa0ccecaaa0ceeaaaa0ceeaaaa0cee8888ccee000cceeecccceeee
+-- 000:0000aaaa0000a2aa0000a08d0000a85f000026ea000069ba0000aea80000abaa
+-- 001:555dcccc5459855a565baa6b55e9885b59fd86dcd67da5ccdf554dcc47554ccc
+-- 002:ccccceee4588cc5ea6aa0cdeffba0cdeff4a0cdcfb6a455c498a0c0c08ea0c0c
+-- 003:ecccc55dcc888458caaaaa5aca888a98cacc85eccacc89eccacc8ccccacc8ccc
+-- 004:c4dcceee4588ccee6aaa5dee488a1cee4dc91c5cc5495c5c04da455c0cca0c0c
+-- 016:0000c7df0000c37c0000cc4f0000ff5f0000ffdf0000f7ff0000c7f30000c7f0
+-- 017:cfffccacfebbaaaadbfb4aa95eabaccdfdefdb69fdfc8fb9cfff0af5ecffccec
+-- 018:c5ca04dc659a4d5d5a9a1ced9a9a1cedaeaa4c6e8fa8cc6e8a2cceeecccceeee
+-- 019:cacccccccaaaaa5acaaac5aacaaaadcccaaaa9aac8888988cc0004ccecccc4ec
+-- 020:ccca0455aaaa0cc6c6aa0ce5a6aa0c6ea6aa0cee8588ccee410cceee555ceeee
 -- 032:000005af000005af000005af000005af000005af000005af000005af000005af
 -- 033:4e0000004e0000004e0000004e0000004e0000004e0000004e0000004e000000
 -- </TILES>
@@ -95,6 +138,6 @@ end
 -- </TRACKS>
 
 -- <PALETTE>
--- 000:1a1c2c5d275db13e53ef7d57ffcd75a7f07038b76425717929366f3b5dc941a6f673eff7f4f4f494b0c2566c86333c57
+-- 000:e2e2d6aeaaaa6d6d6d242424ff040000ff040400ffffff0000ffffff00ffba000004b6000000bababa0404bababa00ba
 -- </PALETTE>
 
