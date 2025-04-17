@@ -55,7 +55,7 @@ function recolor_tile(sx,sy,p)
 		for y=sy, sy+7 do
 			local pixC = pix(x,y)
 			if pixC < 4 then
-				pix(x,y,p[pixC+1])
+				pix(x,y,p[pixC])
 			end
 		end
 	end
