@@ -76,6 +76,7 @@ map_offset_y=-16
 map_palettes={}
 map_pan_smooth=true
 actions={}
+ptileQueue={}
 --
 -- Bank Data Storage
 --
@@ -121,7 +122,7 @@ palettes={
 }
 palcodes={
 	[0]={0,1,2,3},
-	[33]={0,5,13,3}
+	[33]={0,5,13,3},
 	[34]={0,1,15,3}
 }
 --
@@ -441,22 +442,35 @@ function proc_Acts()
 	end
 end
 
+function ptileCheck(tile,x,y)
+	local mapdat_idx=5
+	if current_bank == 2 then mapdat_idx = 6 end
+	local ptile = mapdat[mapdat_idx][x][y]
+	if ptile ~= 0 then
+		local mx=(x-(map_draw_x-2))*8
+		local my=(y-(map_draw_y-2))*8
+		local sx=mx+map_offset_x
+		local sy=my+map_offset_y
+		if (sx>=0 and sx<=240) 
+		and (sy>=0 and sy<=136) then
+			table.insert(
+				ptileQueue,
+				{sx,sy,ptile}
+			)
+		end
+	end
+	return tile
+end
+
 function draw_Map()
 	local mx = map_draw_x-2
 	local my = map_draw_y-2
-	map(mx,my,34,21,map_offset_x,map_offset_y,-1,1)
+	map(mx,my,34,21,map_offset_x,map_offset_y,-1,1,ptileCheck)
+	print(tableLength(ptileQueue),4,24)
 	if current_bank == 1 and bankdata_loaded then
-		for x=mx,34 do
-			for y=my,34 do
-				local ptile = mapdat[5][map_wrap_x(x)][map_wrap_y(y)]
-				local xdiff =
-			end
+		for i,v in ipairs(ptileQueue) do
+			recolorTile(v[1],v[2],palcodes[v[3]])
 		end
-		trace(math.floor(player.wx).." : "..math.floor(player.wy))
-		--local ptile = mapdat[5][math.floor(player.wx)][math.floor(player.wy)]
-		local ptile = mapdat[5][math.floor(player.wx)][math.floor(player.wy)]
-		trace("ptile: "..tostring(ptile))
-		--pset(palettes[ptile])
 	end
 end
 
@@ -469,6 +483,7 @@ function proc_Map()
 		map_draw_x = origin_x
 		map_draw_y = origin_y
 	end
+	ptileQueue={}
 	draw_Map()	
 end
 
