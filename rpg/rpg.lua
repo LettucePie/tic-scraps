@@ -298,8 +298,8 @@ end
 function validate_movement(char, tx, ty)
 	local result = true
 	if (tx < 238 and tx > 1) and (ty < 134 and ty > 1) then
-		for xrange=tx, tx+2 do
-			for yrange=ty, ty+2 do
+		for xrange=tx, tx+1 do
+			for yrange=ty, ty+1 do
 				local ctile = mapdat[3][xrange][yrange]
 				if tableContains(cflags, ctile) then result = false end
 			end
