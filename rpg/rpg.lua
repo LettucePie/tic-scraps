@@ -77,6 +77,7 @@ map_palettes={}
 map_pan_smooth=true
 actions={}
 ptileQueue={}
+postDrawQueue={}
 --
 -- Bank Data Storage
 --
@@ -444,10 +445,15 @@ function proc_Acts()
 	end
 end
 
-function ptileCheck(tile,x,y)
-	local mapdat_idx=5
-	if current_bank == 2 then mapdat_idx = 6 end
-	local ptile = mapdat[mapdat_idx][x][y]
+function tile_Overrides(tile,x,y)
+	local cdat=3
+	local pdat=5
+	if current_bank == 2 then
+		cdat=4
+		pdat=5
+	end
+	local ctile = mapdat[cdat][x][y]
+	local ptile = mapdat[pdat][x][y]
 	if ptile ~= 0 then
 		local mx=(x-(map_draw_x-2))*8
 		local my=(y-(map_draw_y-2))*8
@@ -461,13 +467,17 @@ function ptileCheck(tile,x,y)
 			)
 		end
 	end
-	return tile
+	if ctile == 16 then
+		table.insert(postDrawQueue, {tile,x,y})
+	else
+		return tile
+	end
 end
 
 function draw_Map()
 	local mx = map_draw_x-2
 	local my = map_draw_y-2
-	map(mx,my,34,21,map_offset_x,map_offset_y,-1,1,ptileCheck)
+	map(mx,my,34,21,map_offset_x,map_offset_y,-1,1,tile_Overrides)
 	print(tableLength(ptileQueue),4,24)
 	if current_bank == 1 and bankdata_loaded then
 		for i,v in ipairs(ptileQueue) do
@@ -486,6 +496,7 @@ function proc_Map()
 		map_draw_y = origin_y
 	end
 	ptileQueue={}
+	postDrawQueue={}
 	draw_Map()	
 end
 
@@ -517,6 +528,14 @@ function proc_Spr()
 	end
 end
 
+function proc_PostDrawMap()
+	local ydiff = 34
+	for i,v in ipairs(postDrawQueue) do
+		print(v[1].." : "..v[2].."|"..v[3],4,ydiff,7)
+		ydiff = ydiff + 8
+	end
+end
+
 function TIC()
 	cls()
 	if not bankdata_loaded then collect() end
@@ -526,6 +545,7 @@ function TIC()
 	proc_Map()
 	proc_Anims()
 	proc_Spr()
+	if tableLength(postDrawQueue) > 0 then proc_PostDrawMap() end
 	print("PX: "..player.wx.." PY: "..player.wy, 4,4,9)
 	if not bankdata_loaded then cls() end
 	if t > 12 then t = 0 end
