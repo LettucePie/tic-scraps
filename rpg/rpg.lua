@@ -188,10 +188,10 @@ end
 function map_to_sheet(mtile)
 	trace("MapToSheet")
 	trace("MTILE: "..mtile)
-	trace(mtile/8)
-	trace(mtile%8)
-	trace(mtile//8)
-	return mtile
+	local row=mtile//16
+	trace("ROW: "..row)
+	trace(mtile+(row*16))
+	return mtile+((mtile//16)*16)
 end
 
 function collectTile(idx)
@@ -372,6 +372,9 @@ function BOOT()
 	local a = tostring(6)..","..tostring(5)
 	local b = "6,5"
 	trace(a == b)
+	for i=0,47 do
+		map_to_sheet(i)
+	end
 
 end
 
@@ -547,7 +550,8 @@ function proc_PostDrawMap()
 	local ydiff = 34
 	for i,v in ipairs(postDrawQueue) do
 		print(v[1].." : "..(v[2]-origin_x)*8 .."|"..(v[3]-origin_y)*8,4,ydiff,7)
-		--spr(map_to_sheet(v[1]),(v[2]-origin_x)*8,(v[3]-origin_y)*8)
+		local sxy=mxy_sxy(v[2],v[3])
+		spr(map_to_sheet(v[1]),sxy[1],sxy[2],0,1)
 		ydiff = ydiff + 8
 	end
 end
