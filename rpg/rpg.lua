@@ -166,6 +166,14 @@ function pset(p)
 	end
 end
 
+function mxy_sxy(x,y)
+	local mx=(x-(map_draw_x-2))*8
+	local my=(y-(map_draw_y-2))*8
+	local sx=mx+map_offset_x
+	local sy=my+map_offset_y
+	return {sx,sy}
+end
+
 function recolorTile(sx,sy,p)
 	for x=sx, sx+7 do
 		for y=sy, sy+7 do
@@ -175,6 +183,15 @@ function recolorTile(sx,sy,p)
 			end
 		end
 	end
+end
+
+function map_to_sheet(mtile)
+	trace("MapToSheet")
+	trace("MTILE: "..mtile)
+	trace(mtile/8)
+	trace(mtile%8)
+	trace(mtile//8)
+	return mtile
 end
 
 function collectTile(idx)
@@ -455,15 +472,12 @@ function tile_Overrides(tile,x,y)
 	local ctile = mapdat[cdat][x][y]
 	local ptile = mapdat[pdat][x][y]
 	if ptile ~= 0 then
-		local mx=(x-(map_draw_x-2))*8
-		local my=(y-(map_draw_y-2))*8
-		local sx=mx+map_offset_x
-		local sy=my+map_offset_y
-		if (sx>=0 and sx<=240) 
-		and (sy>=0 and sy<=136) then
+		local sxy=mxy_sxy(x,y)
+		if (sxy[1]>=0 and sxy[1]<=240)
+		and (sxy[2]>=0 and sxy[2]<=136) then
 			table.insert(
 				ptileQueue,
-				{sx,sy,ptile}
+				{sxy[1],sxy[2],ptile}
 			)
 		end
 	end
@@ -524,15 +538,16 @@ end
 function proc_Spr()
 	spr(player.a[player.fi],112,64,0,1,0,0,2,2)
 	for k,v in pairs(characters) do
-		spr(v.a[v.fi],(v.wx-origin_x)*8,(v.wy-origin_y)*8,0,1,0,0,2,2)
+		local sxy=mxy_sxy(v.wx,v.wy)
+		spr(v.a[v.fi],sxy[1],sxy[2],0,1,0,0,2,2)
 	end
 end
 
 function proc_PostDrawMap()
 	local ydiff = 34
 	for i,v in ipairs(postDrawQueue) do
-		print(v[1].." : "..v[2]+map_draw_x.."|"..v[3]+map_draw_y,4,ydiff,7)
-		spr(v[1],(v[2]-origin_x)*8,(v[3]-origin_y)*8)
+		print(v[1].." : "..(v[2]-origin_x)*8 .."|"..(v[3]-origin_y)*8,4,ydiff,7)
+		--spr(map_to_sheet(v[1]),(v[2]-origin_x)*8,(v[3]-origin_y)*8)
 		ydiff = ydiff + 8
 	end
 end
