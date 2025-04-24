@@ -185,14 +185,7 @@ function recolorTile(sx,sy,p)
 	end
 end
 
-function map_to_sheet(mtile)
-	trace("MapToSheet")
-	trace("MTILE: "..mtile)
-	local row=mtile//16
-	trace("ROW: "..row)
-	trace(mtile+(row*16))
-	return mtile+((mtile//16)*16)
-end
+function map_to_sheet(t) return t+((t//16)*16) end
 
 function collectTile(idx)
 	local grid={}
@@ -435,8 +428,8 @@ function proc_Acts()
 				finished = true
 				v.c.act = false
 				if v.c.n == "player" then
-					map_draw_x = round(player.wx - 14, 1)
-					map_draw_y = round(player.wy - 8, 1)
+					map_draw_x = player.wx - 14
+					map_draw_y = player.wy - 8
 					map_offset_x = -16
 					map_offset_y = -16
 				end
