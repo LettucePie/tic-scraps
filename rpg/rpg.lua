@@ -438,20 +438,40 @@ function proc_Acts()
 				end
 			end
 			if finished == false then
-				pre_x = v.c.wx
-				pre_y = v.c.wy
-				if v.d == "up" then v.c.wy=v.c.wy-v.s end
-				if v.d == "down" then v.c.wy=v.c.wy+v.s end
-				if v.d == "left" then v.c.wx=v.c.wx-v.s end
-				if v.d == "right" then v.c.wx=v.c.wx+v.s end
+				if v.d == "up" then 
+					v.c.wy=v.c.wy-v.s
+					if v.c.n == "player" then
+						map_offset_y=round(map_offset_y+v.s*8,1)
+					end 
+				end
+				if v.d == "down" then 
+					v.c.wy=v.c.wy+v.s
+					if v.c.n == "player" then
+						map_offset_y=round(map_offset_y-v.s*8,1)
+					end 
+				end
+				if v.d == "left" then 
+					v.c.wx=v.c.wx-v.s
+					if v.c.n == "player" then
+						map_offset_x=round(map_offset_x+v.s*8,1)
+					end 
+				end
+				if v.d == "right" then 
+					v.c.wx=v.c.wx+v.s
+					if v.c.n == "player" then
+						map_offset_x=round(map_offset_x-v.s*8,1)
+					end 
+				end
 				v.c.wx = round(v.c.wx, 1)
 				v.c.wy = round(v.c.wy, 1)
 				v.c.wx = map_wrap_x(v.c.wx)
 				v.c.wy = map_wrap_y(v.c.wy)
-				if v.c.n == "player" then
-					map_offset_x = map_offset_x + ((pre_x - v.c.wx) * 8)
-					map_offset_y = map_offset_y + ((pre_y - v.c.wy) * 8)
-				end
+				--if v.c.n == "player" then
+				--	map_offset_x = map_offset_x + ((pre_x - v.c.wx) * 8)
+				--	map_offset_y = map_offset_y + ((pre_y - v.c.wy) * 8)
+				--	map_offset_x = map_offset_x + v.s
+				--	map_offset_y = map_offset_y + v.s
+				--end
 			end
 		end
 		if finished then
