@@ -166,10 +166,6 @@ function pset(p)
 end
 
 function mxy_sxy(x,y)
---	local mx=(x-(map_draw_x-2))*8
---	local my=(y-(map_draw_y-2))*8
---	local sx=mx+map_offset_x
---	local sy=my+map_offset_y
 	local sx = x * 8
 	local sy = y * 8
 	sx = sx - origin_x * 8
@@ -438,40 +434,21 @@ function proc_Acts()
 				end
 			end
 			if finished == false then
-				if v.d == "up" then 
-					v.c.wy=v.c.wy-v.s
-					if v.c.n == "player" then
-						map_offset_y=round(map_offset_y+v.s*8,1)
-					end 
-				end
-				if v.d == "down" then 
-					v.c.wy=v.c.wy+v.s
-					if v.c.n == "player" then
-						map_offset_y=round(map_offset_y-v.s*8,1)
-					end 
-				end
-				if v.d == "left" then 
-					v.c.wx=v.c.wx-v.s
-					if v.c.n == "player" then
-						map_offset_x=round(map_offset_x+v.s*8,1)
-					end 
-				end
-				if v.d == "right" then 
-					v.c.wx=v.c.wx+v.s
-					if v.c.n == "player" then
-						map_offset_x=round(map_offset_x-v.s*8,1)
-					end 
-				end
+				pre_x = v.c.wx
+				pre_y = v.c.wy
+				if v.d == "up" then v.c.wy=v.c.wy-v.s end
+				if v.d == "down" then v.c.wy=v.c.wy+v.s end
+				if v.d == "left" then v.c.wx=v.c.wx-v.s end
+				if v.d == "right" then v.c.wx=v.c.wx+v.s end
 				v.c.wx = round(v.c.wx, 1)
 				v.c.wy = round(v.c.wy, 1)
 				v.c.wx = map_wrap_x(v.c.wx)
 				v.c.wy = map_wrap_y(v.c.wy)
-				--if v.c.n == "player" then
-				--	map_offset_x = map_offset_x + ((pre_x - v.c.wx) * 8)
-				--	map_offset_y = map_offset_y + ((pre_y - v.c.wy) * 8)
-				--	map_offset_x = map_offset_x + v.s
-				--	map_offset_y = map_offset_y + v.s
-				--end
+				if v.c.n == "player" then
+					-- TODO clean or replace this to remove rubber SPR fx
+					map_offset_x = map_offset_x + ((pre_x - v.c.wx) * 8)
+					map_offset_y = map_offset_y + ((pre_y - v.c.wy) * 8)
+				end
 			end
 		end
 		if finished then
@@ -520,8 +497,6 @@ function draw_Map()
 end
 
 function proc_Map()
---	origin_x = round(player.wx - 14, 1)
---	origin_y = round(player.wy - 8, 1)
 	origin_x = player.wx-14
 	origin_y = player.wy-8
 	ptileQueue={}
@@ -555,18 +530,13 @@ function proc_Spr()
 	for k,v in pairs(characters) do
 		local sxy=mxy_sxy(v.wx,v.wy)
 		spr(v.a[v.fi],sxy[1],sxy[2],0,1,0,0,2,2)
-		print("sarah x:"..sxy[1].." y:"..sxy[2],4,10,9)
-		trace("Sarah XY: "..sxy[1].." | "..sxy[2])
 	end
 end
 
 function proc_PostDrawMap()
-	local ydiff = 34
 	for i,v in ipairs(postDrawQueue) do
-		print(v[1].." : "..(v[2]-origin_x)*8 .."|"..(v[3]-origin_y)*8,4,ydiff,7)
 		local sxy=mxy_sxy(v[2],v[3])
 		spr(map_to_sheet(v[1]),sxy[1],sxy[2],0,1)
-		ydiff = ydiff + 8
 	end
 end
 
@@ -580,11 +550,6 @@ function TIC()
 	proc_Map()
 	proc_Anims()
 	proc_Spr()
-	print("PX: "..player.wx.." PY: "..player.wy, 4,4,9)
-	trace("Player XY: "..player.wx.." | "..player.wy)
-	trace("ORIGIN XY: "..origin_x.." | "..origin_y)
-	print("MapOXY: "..map_offset_x.." | "..map_offset_y,4,16,9)
-	trace("MapOXY: "..map_offset_x.." | "..map_offset_y)
 	if tableLength(postDrawQueue) > 0 then proc_PostDrawMap() end
 	if not bankdata_loaded then cls() end
 	if t > 12 then t = 0 end
