@@ -74,7 +74,6 @@ map_draw_y=0
 map_offset_x=-16
 map_offset_y=-16
 map_palettes={}
-map_pan_smooth=true
 actions={}
 ptileQueue={}
 postDrawQueue={}
@@ -167,10 +166,14 @@ function pset(p)
 end
 
 function mxy_sxy(x,y)
-	local mx=(x-(map_draw_x-2))*8
-	local my=(y-(map_draw_y-2))*8
-	local sx=mx+map_offset_x
-	local sy=my+map_offset_y
+--	local mx=(x-(map_draw_x-2))*8
+--	local my=(y-(map_draw_y-2))*8
+--	local sx=mx+map_offset_x
+--	local sy=my+map_offset_y
+	local sx = x * 8
+	local sy = y * 8
+	sx = sx - origin_x * 8
+	sy = sy - origin_y * 8
 	return {sx,sy}
 end
 
@@ -445,7 +448,7 @@ function proc_Acts()
 				v.c.wy = round(v.c.wy, 1)
 				v.c.wx = map_wrap_x(v.c.wx)
 				v.c.wy = map_wrap_y(v.c.wy)
-				if v.c.n == "player" and map_pan_smooth then
+				if v.c.n == "player" then
 					map_offset_x = map_offset_x + ((pre_x - v.c.wx) * 8)
 					map_offset_y = map_offset_y + ((pre_y - v.c.wy) * 8)
 				end
@@ -499,12 +502,6 @@ end
 function proc_Map()
 	origin_x = round(player.wx - 14, 1)
 	origin_y = round(player.wy - 8, 1)
-	if not map_pan_smooth then
-		origin_x = roundHalf(origin_x)
-		origin_y = roundHalf(origin_y)
-		map_draw_x = origin_x
-		map_draw_y = origin_y
-	end
 	ptileQueue={}
 	postDrawQueue={}
 	draw_Map()	
@@ -536,6 +533,8 @@ function proc_Spr()
 	for k,v in pairs(characters) do
 		local sxy=mxy_sxy(v.wx,v.wy)
 		spr(v.a[v.fi],sxy[1],sxy[2],0,1,0,0,2,2)
+		print("sarah x:"..sxy[1].." y:"..sxy[2],4,10,9)
+		trace("Sarah XY: "..sxy[1].." | "..sxy[2])
 	end
 end
 
@@ -550,6 +549,7 @@ function proc_PostDrawMap()
 end
 
 function TIC()
+	trace("FRAME")
 	cls()
 	if not bankdata_loaded then collect() end
 	proc_Input()
@@ -558,8 +558,10 @@ function TIC()
 	proc_Map()
 	proc_Anims()
 	proc_Spr()
-	if tableLength(postDrawQueue) > 0 then proc_PostDrawMap() end
 	print("PX: "..player.wx.." PY: "..player.wy, 4,4,9)
+	trace("Player XY: "..player.wx.." | "..player.wy)
+	trace("ORIGIN XY: "..origin_x.." | "..origin_y)
+	if tableLength(postDrawQueue) > 0 then proc_PostDrawMap() end
 	if not bankdata_loaded then cls() end
 	if t > 12 then t = 0 end
 	t = t + 1
