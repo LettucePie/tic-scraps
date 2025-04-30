@@ -500,8 +500,10 @@ function draw_Map()
 end
 
 function proc_Map()
-	origin_x = round(player.wx - 14, 1)
-	origin_y = round(player.wy - 8, 1)
+--	origin_x = round(player.wx - 14, 1)
+--	origin_y = round(player.wy - 8, 1)
+	origin_x = player.wx-14
+	origin_y = player.wy-8
 	ptileQueue={}
 	postDrawQueue={}
 	draw_Map()	
@@ -561,6 +563,8 @@ function TIC()
 	print("PX: "..player.wx.." PY: "..player.wy, 4,4,9)
 	trace("Player XY: "..player.wx.." | "..player.wy)
 	trace("ORIGIN XY: "..origin_x.." | "..origin_y)
+	print("MapOXY: "..map_offset_x.." | "..map_offset_y,4,16,9)
+	trace("MapOXY: "..map_offset_x.." | "..map_offset_y)
 	if tableLength(postDrawQueue) > 0 then proc_PostDrawMap() end
 	if not bankdata_loaded then cls() end
 	if t > 12 then t = 0 end
