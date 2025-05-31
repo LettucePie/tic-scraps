@@ -22,6 +22,7 @@ function Char.new(t)
 	i.a = i.fs.walk_d -- Current Anim
 	i.fi = 1 -- Current Frame Index
 	i.ft = 0 -- Current Frame Tick
+	i.a_break = false -- Stop animation when finishes
 	i.p = true -- Paused
 	i.act = false -- Acting / performing action
 	return i
@@ -407,6 +408,7 @@ function query_WorldMovement(input_dir, anim, dir)
 		if input_dir.time < 2 then
 			player.a = anim
 			player.ft = 0
+			player.a_break = false
 			stop_character(player)
 		else player.p = false end
 		if input_dir.time > 6 then
@@ -414,7 +416,7 @@ function query_WorldMovement(input_dir, anim, dir)
 			if new_movement ~= false then table.insert(actions, new_movement) end
 		end
 	elseif input_dir.time >= 2 then
-		stop_character(player)
+		player.a_break = true
 		input_dir.time = 0
 	end
 end
@@ -510,16 +512,19 @@ end
 
 function proc_Anims()
 	if player.p == false then
-		if player.ft > 12 then
+		if player.ft > 8 then
 			player.ft = 0
 			player.fi = player.fi + 1
-			if player.fi > tableLength(player.a) then player.fi = 1 end
+			if player.fi > tableLength(player.a) then 
+		 	if player.a_break then stop_character(player)
+				else player.fi = 1 end
+			end
 		end
 		player.ft = player.ft + 1
 	end
 	for k,v in pairs(characters) do
 		if v.p == false then
-			if v.ft > 12 then
+			if v.ft > 8 then
 				v.ft = 0
 				v.fi = v.fi + 1
 				if v.fi > tableLength(v.a) then v.fi = 1 end
@@ -538,7 +543,6 @@ function proc_Spr()
 end
 
 function TIC()
-	trace("FRAME")
 	cls()
 	if not bankdata_loaded then collect() end
 	proc_Input()
